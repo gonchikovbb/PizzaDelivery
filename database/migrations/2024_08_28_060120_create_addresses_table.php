@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('addresses', function (Blueprint $table) {
+            $table->id();
+            $table->string('title')->comment('Название адреса');
+            $table->string('city')->comment('Город');
+            $table->string('street')->comment('Улица');
+            $table->string('building')->comment('Дом / Строение');
+            $table->string('floor')->nullable()->comment('Этаж');
+            $table->string('room')->nullable()->comment('Помещение');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('addresses');
+    }
+};
