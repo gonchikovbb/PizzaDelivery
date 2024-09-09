@@ -32,7 +32,6 @@ Route::resources([
     'users' => UserController::class, // Управление пользователями
     'addresses' => AddressController::class, // Управление адресами
     'carts' => CartController::class, // Управление корзинами
-    'orders' => OrderController::class, // Управление заказами
 ]);
 
 // Роут для получения продуктов по категориям

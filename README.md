@@ -1,66 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+ <h1 align="center">Сервис по доставке пиццы PizzaDelivery</h1>
+  <p> Этот проект реализован с помощью PHP 8.0 , фреймворка Laravel, PostgreSql и Nginx.
+ <h2>Описание:</h2>
+  <p> Это сервис, в котором можно зарегистрировать, аутентифицироваться, посмотреть категории товаров, посмотреть все товары, добавить товар в корзину до 20 напитков и 10 пицц, и сделать заказ.</p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<h2>Функционал сервиса:</h2>
+<ul>
 
-## About Laravel
+Пользователям:
+- Регистрация пользователя
+- Аутентификация пользователя
+- Просмотр всех товаров
+- Добавление товара в корзину
+- Просмотреть что добавлено в корзину
+- Просмотр категории товаров
+- Сделать заказ
+- Посмотреть историю заказов
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Администратору:
+- Добавлять/изменять/удалять товары
+- Просматривать список заказов и изменять их статус
+- Добавлять категории товаров
+- Добавлять и назначать роли пользователям
+</ul>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<h2>API:</h2>
+<ul>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Аутентификация
 
-## Learning Laravel
+- **POST /auth/sign-in**: Вход пользователя.
+- **POST /auth/sign-up**: Регистрация пользователя.
+- **POST /auth/sign-out**: Выход пользователя.
+- **GET /auth/refresh**: Обновление токена.
+- **GET /auth/user-info**: Получение информации о пользователе.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Пользователи, адреса и корзины (Ресурсные маршруты)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **GET /users**: Получить список пользователей.
+- **GET /users/{id}**: Получить пользователя по ID.
+- **POST /users**: Создать нового пользователя.
+- **PUT /users/{id}**: Обновить информацию о пользователе.
+- **DELETE /users/{id}**: Удалить пользователя.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **GET /addresses**: Получить список адресов.
+- **GET /addresses/{id}**: Получить адрес по ID.
+- **POST /addresses**: Создать новый адрес.
+- **PUT /addresses/{id}**: Обновить адрес.
+- **DELETE /addresses/{id}**: Удалить адрес.
 
-## Laravel Sponsors
+- **GET /carts**: Получить список корзин.
+- **GET /carts/{id}**: Получить корзину по ID.
+- **POST /carts**: Создать новую корзину.
+- **PUT /carts/{id}**: Обновить корзину.
+- **DELETE /carts/{id}**: Удалить корзину.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Продукты
 
-### Premium Partners
+- **GET /products**: Получить список товаров.
+- **GET /products/{product}**: Получить товар по ID.
+- **GET /products/category/{categoryId}**: Получить товары по категории.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Корзина
 
-## Contributing
+- **POST /carts/{cart}/addItem**: Добавить товар в корзину.
+- **GET /carts/{cart}/getCurrentItems**: Получить текущие товары в корзине.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Заказы
 
-## Code of Conduct
+### Заказы для пользователя
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Маршруты, защищенные аутентификацией:
 
-## Security Vulnerabilities
+- **GET /orders**: Получить список заказов.
+- **POST /orders**: Создать новый заказ.
+- **GET /orders/{order}**: Получить заказ по ID.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Административные маршруты (Ресурсные маршруты)
 
-## License
+- **/admin/products**: Управление товарами.
+- **/admin/roles**: Управление ролями.
+- **/admin/categories**: Управление категориями.
+- **/admin/orders**: Управление заказами.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+<h2>Чтобы запустить проект, выполните:</h2>
+
+Поднять проект:
+
+```make dev-up```
