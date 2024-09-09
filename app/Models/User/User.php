@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Cart\Cart;
@@ -10,6 +11,8 @@ use App\Models\Role\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 /**
  * Модель пользователя
@@ -28,9 +31,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $updated_at
  * @property string $deleted_at
  */
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    use HasUuids, HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -68,6 +71,26 @@ class User extends Authenticatable
     ];
 
     /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier(): mixed
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims(): array
+    {
+        return [];
+    }
+
+    /**
      * Роль пользователя
      *
      * @return BelongsTo
@@ -95,5 +118,15 @@ class User extends Authenticatable
     public function cart(): HasMany
     {
         return $this->hasMany(Cart::class);
+    }
+
+    /**
+     * Check if the user is an admin.
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->role_id === 1; // Админ
     }
 }

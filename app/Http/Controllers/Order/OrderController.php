@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\OrderCreateRequest;
 use App\Http\Requests\Order\OrderUpdateRequest;
 use App\Http\Resources\Order\OrderResource;
+use App\Models\Cart\Cart;
+use App\Models\Cart\CartItem;
 use App\Models\Order\Order;
+use App\Models\Order\OrderItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 class OrderController extends Controller
 {
@@ -17,15 +23,13 @@ class OrderController extends Controller
      * Показать все Заказы
      *
      * @param Request $request
-     * @return AnonymousResourceCollection
+     * @return
      * @apiResourceCollection App\Http\Resources\Order\OrderResource
      * @apiResourceModel App\Models\Order\Order
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request)
     {
-        $models = Order::query()
-            ->paginate($request->get('per_page') ?? 25);
-        return OrderResource::collection($models);
+        return Order::where('user_id', auth()->id())->with('orderItems.product')->get();
     }
 
     /**
@@ -35,22 +39,73 @@ class OrderController extends Controller
      * @apiResource App\Http\Resources\Order\OrderResource
      * @apiResourceModel App\Models\Order\Order
      */
-    public function store(OrderCreateRequest $request): OrderResource
+    public function store(OrderCreateRequest $request): OrderResource|JsonResponse
     {
-        return new OrderResource(Order::create($request->validated()));
+        DB::beginTransaction(); // Начинаем транзакцию
+
+        try {
+            $order = Order::query()->create([
+                'user_id' => Auth::user()->id,
+                'phone_number' => $request->get('phone_number'),
+                'email' => $request->get('email'),
+                'address_id' => $request->get('address_id'),
+                'delivery_time' => $request->get('delivery_time'),
+                'status' => 0,
+            ]);
+
+            $cart = Cart::query()->where('user_id', auth()->id())->first();
+
+            // Проверяем, существует ли корзина
+            if (!$cart) {
+                throw new OrderException('Корзина не найдена.');
+            }
+
+            $cartItems = CartItem::query()->where('cart_id', $cart->id)->get();
+
+            // Проверяем, существуют ли товары в корзине
+            if ($cartItems->isEmpty()) { // Изменено условие на isEmpty()
+                throw new OrderException('Корзина пуста.');
+            }
+
+            foreach ($cartItems as $cartItem) {
+                OrderItem::query()->create([
+                    'order_id' => $order->id,
+                    'product_id' => $cartItem->product_id,
+                    'quantity' => $cartItem->quantity,
+                ]);
+            }
+
+            // Очищаем корзину после создания заказа (опционально)
+            $cartItems->each->delete();
+
+            DB::commit(); // Подтверждаем транзакцию
+
+        } catch (OrderException $e) { //
+            DB::rollBack(); // Откатываем транзакцию в случае ошибки
+            // Обработка исключений, например, логирование ошибки
+            \Log::error('Ошибка при создании заказа: ' . $e->getMessage());
+            return response()->json(['error' => 'Не удалось создать заказ.'], 500);
+        }
+
+        return new OrderResource($order);
     }
 
     /**
      * Показать Заказ
      *
      * @param Order $order
-     * @return OrderResource
+     * @return \Illuminate\Database\Eloquent\Collection
      * @apiResource App\Http\Resources\Order\OrderResource
      * @apiResourceModel App\Models\Order\Order
      */
-    public function show(Order $order): OrderResource
+    public function show(Order $order)
     {
-        return new OrderResource($order);
+        // Проверяем, принадлежит ли заказ авторизованному пользователю
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Доступ запрещен'); // Возвращаем ошибку 403, если доступ запрещен
+        }
+
+        return $order->orderItems()->with('product')->get();
     }
 
     /**

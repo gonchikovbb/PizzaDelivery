@@ -20,46 +20,46 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
-], function ($router) {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
-    Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api');
-    Route::post('/profile', [AuthController::class, 'profile'])->middleware('auth:api');
-});
+// Аутентификация
+Route::post('/auth/sign-in', [AuthController::class, 'signIn']); // Вход пользователя
+Route::post('/auth/sign-up', [AuthController::class, 'signUp']); // Регистрация пользователя
+Route::post('/auth/sign-out', [AuthController::class, 'signOut']); // Выход пользователя
+Route::get('/auth/refresh', [AuthController::class, 'refresh']); // Обновление токена
+Route::get('/auth/user-info', [AuthController::class, 'userInfo']); // Получение информации о пользователе
 
-//Route::post('/register', [AuthController::class, 'signUp']);
-//Route::post('/login', [AuthController::class, 'login']);
-//Route::post('/logout', [AuthController::class, 'logout']);
-
-// Защита маршрутов для корзины
-Route::middleware(['auth.sanctum'])->group(function () {
-    Route::post('/carts/{cart}/addItem', [CartController::class, 'addItem']);
-    Route::get('/carts/{cart}/getCurrentItems', [CartController::class, 'getCurrentItems']);
-});
-
+// Ресурсные маршруты для пользователей, адресов, корзин и заказов
 Route::resources([
-    'addresses' => AddressController::class,
-    'carts' => CartController::class,
-    'categories' => CategoryController::class,
-    'orders' => OrderController::class,
-    'products' => ProductController::class,
-    'roles' => RoleController::class,
-    'users' => UserController::class,
+    'users' => UserController::class, // Управление пользователями
+    'addresses' => AddressController::class, // Управление адресами
+    'carts' => CartController::class, // Управление корзинами
+    'orders' => OrderController::class, // Управление заказами
 ]);
 
 // Роут для получения продуктов по категориям
-Route::get('/products/category/{categoryId}', [ProductController::class, 'getByCategory']);
+Route::get('/products', [ProductController::class, 'index'])->name('api.products.index'); // Получить список товаров
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('api.products.show'); // Получить товар по ID
+Route::get('/products/category/{categoryId}', [ProductController::class, 'getByCategory'])->name('api.products.getByCategory'); // Получить товары по категории
 
-// Роут для добавления товара в корзину
-Route::post('/carts/{cart}/addItem', [CartController::class, 'addItem']);
-Route::get('/carts/{cart}/getCurrentItems', [CartController::class, 'getCurrentItems']);
+// Роуты для управления корзиной
+Route::post('/carts/{cart}/addItem', [CartController::class, 'addItem'])->name('api.carts.addItem'); // Добавить товар в корзину
+Route::get('/carts/{cart}/getCurrentItems', [CartController::class, 'getCurrentItems'])->name('api.carts.getCurrentItems'); // Получить текущие товары в корзине
 
-// Защита маршрутов для корзины
-Route::middleware(['auth'])->group(function () {
-    Route::post('/orders/{order}/addItem', [OrderController::class, 'addOrder']);
-    Route::get('/orders/{order}/getCurrentItems', [OrderController::class, 'getCurrentOrder']);
+// Роуты для управления заказами для пользователя
+Route::middleware(['auth:api'])->prefix('orders')->group(function () {
+    Route::get('/', [OrderController::class, 'index'])->name('api.admin.orders.index'); // Получить список заказов
+    Route::post('/', [OrderController::class, 'store'])->name('api.admin.orders.store'); // Создать новый заказ
+    Route::get('/{order}', [OrderController::class, 'show'])->name('api.admin.orders.show'); // Получить заказ по ID
 });
+
+// Ресурсные маршруты админа
+Route::prefix('admin')->middleware(['auth:api', 'admin'])->group(function () {
+    Route::apiResource('products', ProductController::class); // Управление товарами
+    Route::apiResource('roles', RoleController::class); // Управление ролями
+    Route::apiResource('categories', CategoryController::class); // Управление категориями
+    Route::apiResource('orders', OrderController::class); // Управление заказами
+});
+
+
+
+
+

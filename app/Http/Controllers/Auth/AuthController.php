@@ -2,93 +2,128 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\API\BaseController;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\User\UserController;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegistryRequest;
-use App\Http\Requests\User\UserCreateRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
-class AuthController extends BaseController
+/**
+ * API для авторизации и аутентификации
+ *
+ * @group Авторизация
+ */
+class AuthController extends Controller
 {
     /**
-     * Регистрация нового пользователя.
+     * Запрос на авторизацию по логину и паролю
+     *
+     * @param LoginRequest $request
+     * @return JsonResponse
+     * @throws ValidationException
+     * @unauthenticated
      */
-    public function register(UserCreateRequest $request): JsonResponse
+    public function signIn(LoginRequest $request): JsonResponse
     {
-        // Используем метод store из UserController для создания пользователя
-        $userController = new UserController();
-        $userResource = $userController->store($request);
+        $this->ensureIsNotRateLimited($request);
 
-        $success['token'] =  $userResource->createToken('MyApp')->plainTextToken;
-        $success['name'] =  $userResource->name;
-
-        return $this->sendResponse($success, 'User register successfully.');
-    }
-
-    /**
-     * Вход пользователя в систему.
-     */
-    public function login(LoginRequest $request): JsonResponse
-    {
+        // Авторизуем
         $credentials = $request->only('email', 'password');
+        $token = JWTAuth::attempt($credentials);
 
-        if (!$token = Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        // Неверные данные
+        if (!$token) {
+            $this->incrementLoginAttempts($request);
+            throw ValidationException::withMessages([
+                'email' => ['Предоставленные учетные данные неверны.'],
+            ]);
         }
 
-        return response()->json(compact('token'));
+        $this->clearLoginAttempts($request);
+
+        // Получаем авторизованного пользователя
+        $user = Auth::user();
+
+        return response()->json([
+            'data' => [
+                'accessToken' => $token,
+                'type' => 'bearer',
+                'user' => $user,
+            ]
+        ]);
     }
 
     /**
-     * Get the authenticated User.
+     * Запрос на деаутентификацию
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function profile(): Response
-    {
-        $success = auth()->user();
-
-        return $this->sendResponse($success, 'Refresh token return successfully.');
-    }
-
-    /**
-     * Выход пользователя из системы.
-     */
-    public function logout(): JsonResponse
+    public function signOut(): JsonResponse
     {
         Auth::logout();
-        return response()->json(['message' => 'Вы успешно вышли из системы'], 200);
+        return response()->json([
+            'message' => 'Выход произведен успешно',
+        ]);
     }
 
     /**
-     * Refresh a token.
+     * Маршрут обновления токена
      *
-     * @return Response
+     * Обновляет токен авторизации
+     *
+     * @return JsonResponse
      */
-    public function refresh(): Response
+    public function refresh(): JsonResponse
     {
-        $success = $this->respondWithToken(auth()->refresh());
-
-        return $this->sendResponse($success, 'Refresh token return successfully.');
+        return response()->json([
+            'data' => [
+                'accessToken' => auth()->refresh(),
+                'type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60,
+            ]
+        ]);
     }
 
     /**
-     * Get the token array structure.
+     * Маршрут получения информации о пользователе
      *
-     * @param  string $token
+     * Возвращает всю информацию о User для обновления этих данных в хранилище на фронте
      *
-     * @return array
+     * @return JsonResponse
      */
-    protected function respondWithToken($token): array
+    public function userInfo(): JsonResponse
     {
-        return [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ];
+        // Получаем авторизованного пользователя
+        $user = Auth::user();
+
+        return response()->json([
+            'data' => $user
+        ]);
+    }
+
+    protected function ensureIsNotRateLimited(Request $request)
+    {
+        if (RateLimiter::tooManyAttempts($this->throttleKey($request), 5)) {
+            throw new TooManyRequestsHttpException(60, 'Слишком много запросов на авторизацию. Повторите попытку через 1 минуту.');
+        }
+    }
+
+    protected function incrementLoginAttempts(Request $request)
+    {
+        RateLimiter::hit($this->throttleKey($request), 60);
+    }
+
+    protected function clearLoginAttempts(Request $request)
+    {
+        RateLimiter::clear($this->throttleKey($request));
+    }
+
+    protected function throttleKey(Request $request)
+    {
+        return strtolower($request->input('email')) . '|' . $request->ip();
     }
 }

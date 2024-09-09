@@ -15,6 +15,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CartController extends Controller
 {
+
     // Maximum limits for products
     const MAX_PIZZAS = 10;
     const MAX_DRINKS = 20;
@@ -85,8 +86,6 @@ class CartController extends Controller
 
         return response()->json(['message' => 'Корзина успешно удалена.'], 200);
     }
-
-
 
     /**
      * Получить текущие товары в корзине
