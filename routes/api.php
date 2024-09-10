@@ -27,14 +27,7 @@ Route::post('/auth/sign-out', [AuthController::class, 'signOut']); // Выход
 Route::get('/auth/refresh', [AuthController::class, 'refresh']); // Обновление токена
 Route::get('/auth/user-info', [AuthController::class, 'userInfo']); // Получение информации о пользователе
 
-// Ресурсные маршруты для пользователей, адресов, корзин и заказов
-Route::resources([
-    'users' => UserController::class, // Управление пользователями
-    'addresses' => AddressController::class, // Управление адресами
-    'carts' => CartController::class, // Управление корзинами
-]);
-
-// Роут для получения продуктов по категориям
+// Роуты для получения продуктов
 Route::get('/products', [ProductController::class, 'index'])->name('api.products.index'); // Получить список товаров
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('api.products.show'); // Получить товар по ID
 Route::get('/products/category/{categoryId}', [ProductController::class, 'getByCategory'])->name('api.products.getByCategory'); // Получить товары по категории
@@ -42,6 +35,13 @@ Route::get('/products/category/{categoryId}', [ProductController::class, 'getByC
 // Роуты для управления корзиной
 Route::post('/carts/{cart}/addItem', [CartController::class, 'addItem'])->name('api.carts.addItem'); // Добавить товар в корзину
 Route::get('/carts/{cart}/getCurrentItems', [CartController::class, 'getCurrentItems'])->name('api.carts.getCurrentItems'); // Получить текущие товары в корзине
+Route::resources(['carts' => CartController::class,]); // Управление корзинами
+
+/*
+|--------------------------------------------------------------------------
+| API Routes Пользователя
+|--------------------------------------------------------------------------
+*/
 
 // Роуты для управления заказами для пользователя
 Route::middleware(['auth:api'])->prefix('orders')->group(function () {
@@ -50,8 +50,19 @@ Route::middleware(['auth:api'])->prefix('orders')->group(function () {
     Route::get('/{order}', [OrderController::class, 'show'])->name('api.admin.orders.show'); // Получить заказ по ID
 });
 
-// Ресурсные маршруты админа
+// Ресурсные маршрут пользователя по адресам
+Route::middleware(['auth:api'])->group(function () {
+    Route::apiResource('addresses', AddressController::class); // Управление адресами
+});
+
+/*
+|--------------------------------------------------------------------------
+| API Routes Администратора
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('admin')->middleware(['auth:api', 'admin'])->group(function () {
+    Route::apiResource('users' , UserController::class); // Управление пользователями
     Route::apiResource('products', ProductController::class); // Управление товарами
     Route::apiResource('roles', RoleController::class); // Управление ролями
     Route::apiResource('categories', CategoryController::class); // Управление категориями

@@ -28,18 +28,18 @@ class UserController extends Controller
         return UserResource::collection($models);
     }
 
-    /**
-     * Создать Пользователя
-     *
-     * @param UserCreateRequest $request
-     * @return UserResource
-     * @apiResource App\Http\Resources\User\UserResource
-     * @apiResourceModel App\Models\User\User
-     */
-    public function store(UserCreateRequest $request): UserResource
-    {
-        return new UserResource(User::create($request->validated()));
-    }
+    ///**
+    // * Создать Пользователя
+    // *
+    // * @param UserCreateRequest $request
+    // * @return UserResource
+    // * @apiResource App\Http\Resources\User\UserResource
+    // * @apiResourceModel App\Models\User\User
+    // */
+    //public function store(UserCreateRequest $request): UserResource
+    //{
+    //    return new UserResource(User::create($request->validated()));
+    //}
 
     /**
      * Показать Пользователя

@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegistryRequest;
+use App\Http\Resources\User\UserResource;
+use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -56,6 +60,30 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Запрос на регистрацию
+     *
+     * @param RegistryRequest $request
+     * @return UserResource
+     * @unauthenticated
+     */
+     public function signUp(RegistryRequest $request): UserResource
+     {
+         $data = $request->validated();
+
+         $user = User::query()->create(
+             [
+                 'first_name' => $data['first_name'],
+                 'middle_name' => $data['middle_name'],
+                 'email' => $data['email'],
+                 'password' => Hash::make($data['password']),
+                 'role_id' => $data['role_id'],
+             ]
+         );
+
+         return new UserResource($user);
+     }
 
     /**
      * Запрос на деаутентификацию
