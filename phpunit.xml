@@ -13,7 +13,7 @@
         <testsuite name="Feature">
             <!--<directory>tests/Feature/Controllers/Address</directory>-->
             <!--<directory>tests/Feature/Controllers/Cart</directory>-->
-            <directory>tests/Feature/Controllers/Order</directory>
+            <directory>tests/Feature/Controllers</directory>
         </testsuite>
     </testsuites>
     <source>
