@@ -3,10 +3,10 @@
 namespace Tests\Feature\Controllers\User;
 
 use App\Models\User\User;
-use Tests\Feature\ControllerTestCase;
+use Tests\Feature\AdminTestCase;
 
-class UserTest extends ControllerTestCase
+class UserTest extends AdminTestCase
 {
-    protected $route = "admin/users";
+    protected $route = "users";
     protected $modelClass = User::class;
 }

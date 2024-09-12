@@ -3,10 +3,10 @@
 namespace Tests\Feature\Controllers\Category;
 
 use App\Models\Category\Category;
-use Tests\Feature\ControllerTestCase;
+use Tests\Feature\AdminTestCase;
 
-class CategoryTest extends ControllerTestCase
+class CategoryTest extends AdminTestCase
 {
-    protected $route = "admin/categories";
+    protected $route = "categories";
     protected $modelClass = Category::class;
 }

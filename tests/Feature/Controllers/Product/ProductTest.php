@@ -4,11 +4,11 @@ namespace Tests\Feature\Controllers\Product;
 
 use App\Models\Category\Category;
 use App\Models\Product\Product;
-use Tests\Feature\ControllerTestCase;
+use Tests\Feature\AdminTestCase;
 
-class ProductTest extends ControllerTestCase
+class ProductTest extends AdminTestCase
 {
-    protected $route = "admin/products";
+    protected $route = "products";
     protected $modelClass = Product::class;
 
     public function test_get_all_products()

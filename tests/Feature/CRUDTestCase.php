@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
+// use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Role\Role;
 use App\Models\User\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ControllerTestCase extends TestCase
+class CRUDTestCase extends TestCase
 {
     use RefreshDatabase;
 
@@ -18,20 +19,9 @@ class ControllerTestCase extends TestCase
     {
         parent::setUp();
 
-        if ($this->route == "admin/users" ||
-            $this->route == "admin/products" ||
-            $this->route == "admin/roles" ||
-            $this->route == "admin/categories" ||
-            $this->route == "admin/orders"
-        ) {
-            $role = Role::factory()->create(['name' => 'Admin']);
-            $admin = User::factory()->create(['role_id' => $role->id]);
-
-            $this->actingAs($admin,'api');
-        } elseif ($this->route == "addresses") {
+        if ($this->route == "addresses") {
             $user = User::factory()->create();
             $this->actingAs($user, 'api');
-
         }
     }
 

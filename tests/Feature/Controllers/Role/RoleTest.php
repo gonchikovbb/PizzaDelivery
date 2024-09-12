@@ -3,11 +3,11 @@
 namespace Tests\Feature\Controllers\Role;
 
 use App\Models\Role\Role;
-use Tests\Feature\ControllerTestCase;
+use Tests\Feature\AdminTestCase;
 
-class RoleTest extends ControllerTestCase
+class RoleTest extends AdminTestCase
 {
-    protected $route = "admin/roles";
+    protected $route = "roles";
     protected $modelClass = Role::class;
 
     public function generateFakeModel(): array

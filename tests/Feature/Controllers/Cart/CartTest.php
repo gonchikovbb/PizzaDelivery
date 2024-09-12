@@ -6,9 +6,9 @@ use App\Models\Cart\Cart;
 use App\Models\Cart\CartItem;
 use App\Models\Product\Product;
 use App\Models\User\User;
-use Tests\Feature\ControllerTestCase;
+use Tests\Feature\CRUDTestCase;
 
-class CartTest extends ControllerTestCase
+class CartTest extends CRUDTestCase
 {
     protected $route = "carts";
     protected $modelClass = Cart::class;
