@@ -76,6 +76,6 @@ class RoleController extends Controller
     {
         $role->delete();
 
-        return response()->json(['message' => 'Роль успешно удалена.'], 200);
+        return response()->json(['message' => 'Роль успешно удалена.'], 204);
     }
 }

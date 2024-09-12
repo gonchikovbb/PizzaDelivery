@@ -23,23 +23,24 @@ class UserController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
+        auth()->user()->isAdmin();
         $models = User::query()
             ->paginate($request->get('per_page') ?? 25);
         return UserResource::collection($models);
     }
 
-    ///**
-    // * Создать Пользователя
-    // *
-    // * @param UserCreateRequest $request
-    // * @return UserResource
-    // * @apiResource App\Http\Resources\User\UserResource
-    // * @apiResourceModel App\Models\User\User
-    // */
-    //public function store(UserCreateRequest $request): UserResource
-    //{
-    //    return new UserResource(User::create($request->validated()));
-    //}
+    /**
+     * Создать Пользователя
+     *
+     * @param UserCreateRequest $request
+     * @return UserResource
+     * @apiResource App\Http\Resources\User\UserResource
+     * @apiResourceModel App\Models\User\User
+     */
+    public function store(UserCreateRequest $request): UserResource
+    {
+        return new UserResource(User::create($request->validated()));
+    }
 
     /**
      * Показать Пользователя
@@ -77,6 +78,6 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return response()->json(['message' => 'Пользователь успешно удален.'], 200);
+        return response()->json(['message' => 'Пользователь успешно удален.'], 204);
     }
 }

@@ -2,19 +2,11 @@
 
 namespace Tests\Feature\Controllers\Category;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use App\Models\Category\Category;
+use Tests\Feature\ControllerTestCase;
 
-class CategoryTest extends TestCase
+class CategoryTest extends ControllerTestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
+    protected $route = "admin/categories";
+    protected $modelClass = Category::class;
 }

@@ -24,7 +24,7 @@ class UserFactory extends Factory
             'password' => 'password123',
             //'password_confirmation' => 'password123',
             'birthdate' => $this->faker->date(),
-            'role_id' => Role::factory()->create(['name' => 'User']),
+            'role_id' => Role::factory()->create(),
         ];
     }
 }

@@ -2,19 +2,16 @@
 
 namespace Tests\Feature\Controllers\Role;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use App\Models\Role\Role;
+use Tests\Feature\ControllerTestCase;
 
-class RoleTest extends TestCase
+class RoleTest extends ControllerTestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+    protected $route = "admin/roles";
+    protected $modelClass = Role::class;
 
-        $response->assertStatus(200);
+    public function generateFakeModel(): array
+    {
+        return ['name' => 'Moderator'];
     }
 }

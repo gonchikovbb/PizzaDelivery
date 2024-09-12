@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/sign-in', [AuthController::class, 'signIn']); // Вход пользователя
 Route::post('/auth/sign-up', [AuthController::class, 'signUp']); // Регистрация пользователя
 Route::post('/auth/sign-out', [AuthController::class, 'signOut']); // Выход пользователя
-Route::get('/auth/refresh', [AuthController::class, 'refresh']); // Обновление токена
 Route::get('/auth/user-info', [AuthController::class, 'userInfo']); // Получение информации о пользователе
 
 // Роуты для получения продуктов
@@ -45,9 +44,9 @@ Route::resources(['carts' => CartController::class,]); // Управление �
 
 // Роуты для управления заказами для пользователя
 Route::middleware(['auth:api'])->prefix('orders')->group(function () {
-    Route::get('/', [OrderController::class, 'index'])->name('api.admin.orders.index'); // Получить список заказов
-    Route::post('/', [OrderController::class, 'store'])->name('api.admin.orders.store'); // Создать новый заказ
-    Route::get('/{order}', [OrderController::class, 'show'])->name('api.admin.orders.show'); // Получить заказ по ID
+    Route::get('/', [OrderController::class, 'index'])->name('api.orders.index'); // Получить список заказов
+    Route::post('/', [OrderController::class, 'store'])->name('api.orders.store'); // Создать новый заказ
+    Route::get('/{order}', [OrderController::class, 'show'])->name('api.orders.show'); // Получить заказ по ID
 });
 
 // Ресурсные маршрут пользователя по адресам
@@ -68,8 +67,3 @@ Route::prefix('admin')->middleware(['auth:api', 'admin'])->group(function () {
     Route::apiResource('categories', CategoryController::class); // Управление категориями
     Route::apiResource('orders', OrderController::class); // Управление заказами
 });
-
-
-
-
-

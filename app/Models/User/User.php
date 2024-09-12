@@ -127,6 +127,6 @@ class User extends Authenticatable implements JWTSubject
      */
     public function isAdmin()
     {
-        return $this->role_id === 1; // Админ
+        return $this->role->name === 'Admin'; // Проверка по названию роли
     }
 }

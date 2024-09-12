@@ -18,7 +18,7 @@ class UserCreateRequest extends FormRequest
             'middle_name' => 'nullable|string|max:255', // Необязательное поле, строка, максимум 255 символов
             'email' => 'required|email|unique:users,email', // Обязательное поле, должно быть уникальным в таблице users
             'phone_number' => 'nullable|string|max:15', // Необязательное поле, строка, максимум 15 символов
-            'password' => 'required|string|min:8|confirmed', // Обязательное поле, минимум 8 символов, должно совпадать с полем password_confirmation
+            'password' => 'required|string|min:8', // Обязательное поле, минимум 8 символов
             'birthdate' => 'nullable|date', // Необязательное поле, должно быть корректной датой
             'role_id' => 'required|exists:roles,id', // Обязательное поле, должно существовать в таблице roles
         ];

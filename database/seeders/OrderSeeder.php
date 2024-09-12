@@ -26,7 +26,7 @@ class OrderSeeder extends Seeder
                 'phone_number' => $user->phone_number, // Пример номера телефона
                 'email' => $user->email,
                 'address_id' => $address->id,
-                'delivery_time' => now()->addHours(2)->format('H:i:s'), // Время доставки через 2 часа
+                'delivery_time' => now()->addHours(2)->format('H:i'), // Время доставки через 2 часа
                 'status' => rand(0, 3),
             ]);
 

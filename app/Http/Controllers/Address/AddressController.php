@@ -76,6 +76,6 @@ class AddressController extends Controller
     {
         $address->delete();
 
-        return response()->json(['message' => 'Адрес успешно удален.'], 200);
+        return response()->json(['message' => 'Адрес успешно удален.'], 204);
     }
 }

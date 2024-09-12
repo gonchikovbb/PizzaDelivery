@@ -3,13 +3,10 @@
 namespace Tests\Feature\Controllers\Address;
 
 use App\Models\Address\Address;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\Feature\GuestResourceTestCase;
-use Tests\TestCase;
+use Tests\Feature\ControllerTestCase;
 
-class AddressTest extends GuestResourceTestCase
+class AddressTest extends ControllerTestCase
 {
-    protected $route = "address";
+    protected $route = "addresses";
     protected $modelClass = Address::class;
 }

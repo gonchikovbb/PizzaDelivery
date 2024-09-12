@@ -18,7 +18,7 @@ class OrderCreateRequest extends FormRequest
             'phone_number' => 'required|string|max:15', // Обязательное поле, строка, максимум 15 символов
             'email' => 'required|email', // Обязательное поле, должно быть корректным email
             'address_id' => 'required|exists:addresses,id', // Обязательное поле, должно существовать в таблице addresses
-            'delivery_time' => 'required|date_format:H:i',// Обязательное поле, должно быть корректным временем
+            'delivery_time' => 'required|date_format:H:i:s',// Обязательное поле, должно быть корректным временем
             //'status' => 'required|string|in:0,1,2,3', // Обязательное поле, строка, должно быть одним из указанных статусов
         ];
     }

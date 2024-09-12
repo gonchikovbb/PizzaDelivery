@@ -84,7 +84,7 @@ class CartController extends Controller
     {
         $cart->delete();
 
-        return response()->json(['message' => 'Корзина успешно удалена.'], 200);
+        return response()->json(['message' => 'Корзина успешно удалена.'], 204);
     }
 
     /**

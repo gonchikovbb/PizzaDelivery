@@ -100,11 +100,6 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        // Проверяем, принадлежит ли заказ авторизованному пользователю
-        if ($order->user_id !== auth()->id()) {
-            abort(403, 'Доступ запрещен'); // Возвращаем ошибку 403, если доступ запрещен
-        }
-
         return $order->orderItems()->with('product')->get();
     }
 
@@ -131,6 +126,6 @@ class OrderController extends Controller
     {
         $order->delete();
 
-        return response()->json(['message' => 'Заказ успешно удален.'], 200);
+        return response()->json(['message' => 'Заказ успешно удален.'], 204);
     }
 }

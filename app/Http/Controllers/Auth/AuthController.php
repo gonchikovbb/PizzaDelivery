@@ -99,24 +99,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Маршрут обновления токена
-     *
-     * Обновляет токен авторизации
-     *
-     * @return JsonResponse
-     */
-    public function refresh(): JsonResponse
-    {
-        return response()->json([
-            'data' => [
-                'accessToken' => auth()->refresh(),
-                'type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 60,
-            ]
-        ]);
-    }
-
-    /**
      * Маршрут получения информации о пользователе
      *
      * Возвращает всю информацию о User для обновления этих данных в хранилище на фронте
